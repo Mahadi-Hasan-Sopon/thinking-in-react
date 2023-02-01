@@ -1,0 +1,35 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.image {
+  width: 55%;
+  display: block;
+  margin: 0 auto;
+}
+
+.search {
+  display: flex;
+  flex-direction: column;
+  width: 55%;
+  margin: 20px auto;
+  border: 1px solid yellow;
+  padding: 10px;
+}
+
+.search input,
+label {
+  padding: 5px 10px;
+}
+
+.productTable {
+  width: 55%;
+  margin: 20px auto;
+  border: 1px solid purple;
+  padding: 10px;
+}
+
+.fpt {
+  border: 1px solid red;
+}
