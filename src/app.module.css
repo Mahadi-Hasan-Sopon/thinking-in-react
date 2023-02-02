@@ -30,6 +30,20 @@ label {
   padding: 10px;
 }
 
+.productRow {
+  display: flex;
+  justify-content: space-around;
+}
+
+.tableHead th {
+  display: block;
+}
+
+.tableHead tr {
+  display: flex;
+  justify-content: space-around;
+}
+
 .fpt {
   border: 1px solid red;
 }
