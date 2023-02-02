@@ -1,15 +1,33 @@
+import React from "react";
 import styles from "./app.module.css";
 
-function SearchBar() {
-  return (
-    <div className={styles.search}>
-      <input type="text" placeholder="Search..." />
-      <label>
-        <input type="checkbox" />
-        include in stock products only.
-      </label>
-    </div>
-  );
+class SearchBar extends React.Component {
+  handleFilteredChange = (e) => {
+    this.props.onFilteredTextChange(e.target.value);
+  };
+  handleInStockChange = (e) => {
+    this.props.onStockChange(e.target.checked);
+  };
+  render() {
+    return (
+      <div className={styles.search}>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={this.props.filteredText}
+          onChange={this.handleFilteredChange}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={this.props.inStockOnly}
+            onChange={this.handleInStockChange}
+          />
+          include in stock products only.
+        </label>
+      </div>
+    );
+  }
 }
 
 function ProductCategoryRow(props) {
@@ -29,7 +47,7 @@ function ProductRow(props) {
     <span style={{ color: "red" }}>{product.name}</span>
   );
   return (
-    <tr>
+    <tr className={styles.productRow}>
       <td>{name}</td>
       <td>{product.price}</td>
     </tr>
@@ -37,10 +55,19 @@ function ProductRow(props) {
 }
 
 function ProductTable(props) {
+  const filteredText = props.filteredText;
+  const inStockOnly = props.inStockOnly;
+
   const rows = [];
   let lastCategory = null;
 
   props.products.forEach((product) => {
+    if (product.name.indexOf(filteredText) === -1) {
+      return;
+    }
+    if (inStockOnly && !product.stocked) {
+      return;
+    }
     if (product.category !== lastCategory) {
       rows.push(
         <ProductCategoryRow
@@ -54,22 +81,56 @@ function ProductTable(props) {
   });
   return (
     <table className={styles.productTable}>
-      <thead>
+      <thead className={styles.tableHead}>
         <tr>
           <th>Name</th>
           <th>Price</th>
         </tr>
       </thead>
-      <tbody>{rows}</tbody>
+      <tbody className={styles.tableBody}>{rows}</tbody>
     </table>
   );
 }
 
-export default function FilterableProductTable(props) {
-  return (
-    <div className={styles.fpt}>
-      <SearchBar />
-      <ProductTable products={props.products} />
-    </div>
-  );
+class FilterableProductTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filteredText: "",
+      inStockOnly: false
+    };
+    this.handleFilteredTextChange = this.handleFilteredTextChange.bind(this);
+    this.handleInStockChange = this.handleInStockChange.bind(this);
+  }
+
+  handleFilteredTextChange = (filteredText) => {
+    this.setState({
+      filteredText: filteredText
+    });
+  };
+
+  handleInStockChange = (inStockOnly) => {
+    this.setState({
+      inStockOnly: inStockOnly
+    });
+  };
+  render() {
+    return (
+      <div className={styles.fpt}>
+        <SearchBar
+          filteredText={this.state.filteredText}
+          inStockOnly={this.state.inStockOnly}
+          onFilteredTextChange={this.handleFilteredTextChange}
+          onStockChange={this.handleInStockChange}
+        />
+        <ProductTable
+          products={this.props.products}
+          filteredText={this.state.filteredText}
+          inStockOnly={this.state.inStockOnly}
+        />
+      </div>
+    );
+  }
 }
+
+export default FilterableProductTable;
